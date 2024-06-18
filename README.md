@@ -12,6 +12,24 @@ Make sure you install the latest package versions by updating system packages if
 
 ```
 sudo apt update && sudo apt -y upgrade
+
+sudo adduser frappe
+sudo usermod -aG sudo frappe
+su - frappe
+ssh-keygen -t rsa -b 4096 -C "samarth.upare@redtra.com"
+
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+
+ssh -T git@github.com
+
+sudo apt install git
+
+git config --global user.name "Samarth Upare"
+git config --global user.email "samarth.upare@redtra.com"
+
+
+
 ```
 and then reboot your machine 
 
