@@ -20,6 +20,7 @@ ssh-keygen -t rsa -b 4096 -C "samarth.upare@redtra.com"
 
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
+chmod 600 /home/frappe/.ssh/id_rsa
 
 ssh -T git@github.com
 
