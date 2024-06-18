@@ -37,7 +37,7 @@ and then reboot your machine
 
 1. Clone the Repo:
 ```
-git clone https://github.com/flexcomng/erpnext_quick_install.git
+git clone https://github.com/SamarthRedtra/erpnext_quick_install.git
 ```
 2. navigate to the folder:
 ```
