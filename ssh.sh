@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 
 # Define necessary variables for HRMS installation and SSL setup
 bench_version="version-15"  # Set the bench version, e.g., "version-13", "version-14", or "version-15"
-site_name="example.com"    # Set the site name to the domain you are configuring
+site_name="poc.redtra.com"    # Set the site name to the domain you are configuring
 USER=$(whoami)             # Automatically get the current system user
 email_address=""           # Initialize to empty, will be filled by user input
 
