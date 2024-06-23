@@ -454,7 +454,7 @@ case "$continue_prod" in
         "yes" | "y")
         sleep 2
         # Setup supervisor and nginx config
-        bench get-app https://github.com/NagariaHussain/tldraw_whiteboard.git && \
+        bench get-app https://github.com/SamarthRedtra/tldraw_whiteboard.git && \
         bench --site $site_name install-app tldraw_whiteboard
         sleep 1
     esac
