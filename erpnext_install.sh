@@ -446,7 +446,43 @@ case "$continue_prod" in
     printf '\xF0\x9F\x8E\x86'
     printf "${NC}\n"
     sleep 3
+    
+    echo -e "${LIGHT_BLUE}Would you like to install Whiteboard? (yes/no)${NC}"
+    read -p "Response: " whiteboard_install
+    whiteboard_install=$(echo "$whiteboard_install" | tr '[:upper:]' '[:lower:]')
+    case "$whiteboard_install" in
+        "yes" | "y")
+        sleep 2
+        # Setup supervisor and nginx config
+        bench get-app https://github.com/NagariaHussain/tldraw_whiteboard.git && \
+        bench --site $site_name install-app tldraw_whiteboard
+        sleep 1
+    esac
+    
+    echo -e "${LIGHT_BLUE}Would you like to install Chat? (yes/no)${NC}"
+    read -p "Response: " chat_install
+    chat_install=$(echo "$chat_install" | tr '[:upper:]' '[:lower:]')
+    case "$chat_install" in
+        "yes" | "y")
+        sleep 2
+        # Setup supervisor and nginx config
+        bench get-app chat && \
+        bench --site $site_name install-app chat
+        sleep 1
+    esac
 
+    echo -e "${LIGHT_BLUE} Would you like to install Wiki? (yes/no)${NC}"
+    read -p "Response: " wiki_install
+    wiki_install=$(echo "$wiki_install" | tr '[:upper:]' '[:lower:]')
+    case "$wiki_install" in
+        "yes" | "y")
+        sleep 2
+        # Setup supervisor and nginx config
+        bench get-app https://github.com/frappe/wiki && \
+        bench --site $site_name install-app wiki
+        sleep 1
+    esac
+    
     echo -e "${LIGHT_BLUE}Would you like to install HRMS? (yes/no)${NC}"
     read -p "Response: " hrms_install
     hrms_install=$(echo "$hrms_install" | tr '[:upper:]' '[:lower:]')
