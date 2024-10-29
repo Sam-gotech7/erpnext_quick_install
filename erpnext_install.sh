@@ -460,6 +460,7 @@ case "$continue_prod" in
     fi
 
     # Restart supervisor
+    
     sudo service supervisor restart && \
 
     # Setup production again to reflect the new site
