@@ -398,7 +398,7 @@ clone_repo() {
 # Note: Since frappe is installed during bench init, we can skip cloning frappe here.
 
 # 1. bench get-app erpnext --branch=version-15 -> don't ask confirmation
-bench get-app erpnext --branch=$bench_version
+bench get-app git@github.com:Sam-gotech7/erpnext.git --branch=$bench_version
 bench --site "$site_name" install-app erpnext
 
 # 2. git@github.com:Sam-gotech7/vanilla_theme.git -> don't ask confirmation
@@ -412,9 +412,6 @@ clone_repo "git@github.com:Sam-gotech7/payments.git" "no" "payments"
 
 # 2. git@github.com:Sam-gotech7/raven.git -> don't ask confirmation
 clone_repo "git@github.com:Sam-gotech7/raven.git" "no" "raven"
-
-# 3. git@github.com:Sam-gotech7/go_gym.git -> don't ask confirmation
-clone_repo "git@github.com:Sam-gotech7/go_gym.git" "no" "go_gym"
 
 # 4. git@github.com:Sam-gotech7/plan_control_manager.git -> don't ask confirmation
 clone_repo "git@github.com:Sam-gotech7/plan_control_manager.git" "no" "plan_control_manager"
