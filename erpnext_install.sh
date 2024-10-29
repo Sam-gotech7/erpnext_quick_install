@@ -94,7 +94,7 @@ ask_twice() {
         fi
 
         if [ "$val1" = "$val2" ]; then
-            printf "${GREEN}Password confirmed${NC}" >&2
+            printf "${GREEN}Password confirmed${NC}\n" >&2
             echo "$val1"
             break
         else
@@ -368,19 +368,62 @@ sudo chmod -R o+rx /home/$(echo $USER)
 
 bench new-site $site_name --db-root-password $sqlpasswrd --admin-password $adminpasswrd
 
-# Prompt user to confirm if they want to install ERPNext
+# Install specified repositories
+echo -e "${LIGHT_BLUE}Cloning specified repositories...${NC}"
+sleep 2
 
-echo -e "${LIGHT_BLUE}Would you like to install ERPNext? (yes/no)${NC}"
-read -p "Response: " erpnext_install
-erpnext_install=$(echo "$erpnext_install" | tr '[:upper:]' '[:lower:]')
-case "$erpnext_install" in
-    "yes" | "y")
-    sleep 2
-    # Setup supervisor and nginx config
-    bench get-app erpnext --branch $bench_version && \
-    bench --site $site_name install-app erpnext
-    sleep 1
-esac
+clone_repo() {
+    local repo_url="$1"
+    local require_confirmation="$2"
+    local app_name="$3"
+
+    if [[ "$require_confirmation" == "yes" ]]; then
+        echo -e "${YELLOW}Do you want to install $app_name from $repo_url? (yes/no)${NC}"
+        read -p "Response: " confirm_clone
+        confirm_clone=$(echo "$confirm_clone" | tr '[:upper:]' '[:lower:]')
+        if [[ "$confirm_clone" == "yes" || "$confirm_clone" == "y" ]]; then
+            bench get-app "$repo_url"
+            bench --site "$site_name" install-app "$app_name"
+        else
+            echo -e "${RED}Skipping $repo_url.${NC}"
+        fi
+    else
+        bench get-app "$repo_url"
+        bench --site "$site_name" install-app "$app_name"
+    fi
+}
+
+# Clone and install repositories as per your list
+# 1. git@github.com:Sam-gotech7/frappe.git  -> don't ask confirmation
+# Note: Since frappe is installed during bench init, we can skip cloning frappe here.
+
+# 1. bench get-app erpnext --branch=version-15 -> don't ask confirmation
+bench get-app erpnext --branch=$bench_version
+bench --site "$site_name" install-app erpnext
+
+# 2. git@github.com:Sam-gotech7/vanilla_theme.git -> don't ask confirmation
+clone_repo "git@github.com:Sam-gotech7/vanilla_theme.git" "no" "vanilla_theme"
+
+# 3. git@github.com:Sam-gotech7/crm.git -> ask confirmation
+clone_repo "git@github.com:Sam-gotech7/crm.git" "yes" "crm"
+
+# 3. git@github.com:Sam-gotech7/payments.git -> don't ask confirmation
+clone_repo "git@github.com:Sam-gotech7/payments.git" "no" "payments"
+
+# 2. git@github.com:Sam-gotech7/raven.git -> don't ask confirmation
+clone_repo "git@github.com:Sam-gotech7/raven.git" "no" "raven"
+
+# 3. git@github.com:Sam-gotech7/go_gym.git -> don't ask confirmation
+clone_repo "git@github.com:Sam-gotech7/go_gym.git" "no" "go_gym"
+
+# 4. git@github.com:Sam-gotech7/plan_control_manager.git -> don't ask confirmation
+clone_repo "git@github.com:Sam-gotech7/plan_control_manager.git" "no" "plan_control_manager"
+
+# 5. git@github.com:Sam-gotech7/drive.git -> ask confirmation
+clone_repo "git@github.com:Sam-gotech7/drive.git" "yes" "drive"
+
+# 6. git@github.com:Sam-gotech7/tldraw_whiteboard.git -> ask confirmation
+clone_repo "git@github.com:Sam-gotech7/tldraw_whiteboard.git" "yes" "tldraw_whiteboard"
 
 # Dynamically set the Python version for the playbook file path
 python_version=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
@@ -435,7 +478,7 @@ case "$continue_prod" in
         bench setup redis
         sudo supervisorctl reload
     fi
-    echo -e "${YELLOW}Restarting bench to apply all changes and optimizing environment pernissions.${NC}"
+    echo -e "${YELLOW}Restarting bench to apply all changes and optimizing environment permissions.${NC}"
     sleep 1
 
 
@@ -446,54 +489,6 @@ case "$continue_prod" in
     printf '\xF0\x9F\x8E\x86'
     printf "${NC}\n"
     sleep 3
-    
-    echo -e "${LIGHT_BLUE}Would you like to install Whiteboard? (yes/no)${NC}"
-    read -p "Response: " whiteboard_install
-    whiteboard_install=$(echo "$whiteboard_install" | tr '[:upper:]' '[:lower:]')
-    case "$whiteboard_install" in
-        "yes" | "y")
-        sleep 2
-        # Setup supervisor and nginx config
-        bench get-app https://github.com/SamarthRedtra/tldraw_whiteboard.git && \
-        bench --site $site_name install-app tldraw_whiteboard
-        sleep 1
-    esac
-    
-    echo -e "${LIGHT_BLUE}Would you like to install Chat? (yes/no)${NC}"
-    read -p "Response: " chat_install
-    chat_install=$(echo "$chat_install" | tr '[:upper:]' '[:lower:]')
-    case "$chat_install" in
-        "yes" | "y")
-        sleep 2
-        # Setup supervisor and nginx config
-        bench get-app chat && \
-        bench --site $site_name install-app chat
-        sleep 1
-    esac
-
-    echo -e "${LIGHT_BLUE} Would you like to install Wiki? (yes/no)${NC}"
-    read -p "Response: " wiki_install
-    wiki_install=$(echo "$wiki_install" | tr '[:upper:]' '[:lower:]')
-    case "$wiki_install" in
-        "yes" | "y")
-        sleep 2
-        # Setup supervisor and nginx config
-        bench get-app https://github.com/frappe/wiki && \
-        bench --site $site_name install-app wiki
-        sleep 1
-    esac
-    
-    echo -e "${LIGHT_BLUE}Would you like to install HRMS? (yes/no)${NC}"
-    read -p "Response: " hrms_install
-    hrms_install=$(echo "$hrms_install" | tr '[:upper:]' '[:lower:]')
-    case "$hrms_install" in
-        "yes" | "y")
-        sleep 2
-        # Setup supervisor and nginx config
-        bench get-app hrms --branch $bench_version && \
-        bench --site $site_name install-app hrms
-        sleep 1
-    esac
 
     echo -e "${YELLOW}Would you like to install SSL? (yes/no)${NC}"
 
@@ -502,7 +497,7 @@ case "$continue_prod" in
 
     case "$continue_ssl" in
         "yes" | "y")
-            echo -e "${YELLOW}Make sure your domain name is pointed to the IP of this instance and is reachable before your proceed.${NC}"
+            echo -e "${YELLOW}Make sure your domain name is pointed to the IP of this instance and is reachable before you proceed.${NC}"
             sleep 3
             # Prompt user for email
             read -p "Enter your email address: " email_address
@@ -524,7 +519,7 @@ case "$continue_prod" in
             sudo snap refresh core && \
             sudo snap install --classic certbot && \
             sudo ln -s /snap/bin/certbot /usr/bin/certbot
-            
+
             # Obtain and Install the certificate
             echo -e "${YELLOW}Obtaining and installing SSL certificate...${NC}"
             sleep 2
